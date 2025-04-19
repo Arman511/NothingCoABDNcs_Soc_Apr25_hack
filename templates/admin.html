@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="card-wrapper">
+        <div class="card">
+            <h1 class="center">ADD PROF</h1>
+            <form class="add_prof" name="add_prof">
+                <label for="email" class="label">Email</label>
+                <input id="email_prof"
+                       type="email"
+                       name="email"
+                       class="field"
+                       placeholder="Email"
+                       autocomplete="email"
+                       required />
+                <div class="password-container">
+                    <label for="password" class="label">Password</label>
+                    <input id="password_prof"
+                           type="password"
+                           name="password"
+                           class="field"
+                           placeholder="Password"
+                           autocomplete="password"
+                           required />
+                </div>
+                <p class="error error--hidden"></p>
+                <input type="submit" value="ADD PROF" class="btn" id="submit" />
+            </form>
+        
+           
+        </div>
+    </div>
+    <div class="card-wrapper">
+        <div class="card">
+            <h1 class="center">ADD STUDENT</h1>
+            <form class="add_stu" name="add_stu">
+                <label for="email" class="label">Email</label>
+                <input id="email_stu"
+                       type="email"
+                       name="email"
+                       class="field"
+                       placeholder="Email"
+                       autocomplete="email"
+                       required />
+                <div class="password-container">
+                    <label for="password" class="label">Password</label>
+                    <input id="password_stu"
+                           type="password"
+                           name="password"
+                           class="field"
+                           placeholder="Password"
+                           autocomplete="password"
+                           required />
+                </div>
+                <p class="error error--hidden"></p>
+                <input type="submit" value="ADD PROF" class="btn" id="submit" />
+            </form>
+        
+           
+        </div>
+        <script src="/static/admin/script.js"></script>
+    </div>
+{% endblock content %}
