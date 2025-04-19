@@ -24,13 +24,13 @@ def make_tutorial(data):
             raise ValueError(f"'{field}' is required but not found in data.")
 
     # Generate a unique tutorial ID
-    tutorial_id = str(uuid.uuid4())
+    tutorial_id = str(uuid.uuid4().hex)
     print(f"Creating tutorial with ID: {tutorial_id}")
 
     # Process questions
     tutorial_questions = []
     for question in data["tutorial_questions"]:
-        question_id = str(uuid.uuid4())
+        question_id = str(uuid.uuid4().hex)
         question["_id"] = question_id
         tutorial_questions.append(question)
         print(f"Added question with ID: {question_id}")

@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 
 
+from course.route_course import add_course_routes
 from professors.routes_professors import add_professor_routes
 from students.routes_students import add_student_routes
 from tutorial.routes_tutorial import add_tutorial_routes
@@ -41,6 +42,7 @@ add_professor_routes(app)
 
 # Add other routes
 add_tutorial_routes(app)
+add_course_routes(app)
 
 if __name__ == "__main__":
     app.run(debug=True)
