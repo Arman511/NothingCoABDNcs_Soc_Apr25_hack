@@ -1,5 +1,5 @@
 # Use Python slim image
-FROM python:alpine
+FROM python:3.13-alpine
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -10,14 +10,15 @@ ENV PYTHONUNBUFFERED=1 \
 WORKDIR /app
 
 # Install system dependencies and create a virtual environment
-RUN python -m venv $VENV_PATH && \
+RUN python3 -m venv $VENV_PATH && \
     $VENV_PATH/bin/pip install --no-cache-dir --upgrade pip setuptools wheel
 
 # Pre-copy requirements to leverage Docker cache
 COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN $VENV_PATH/bin/pip install --no-cache-dir -r requirements.txt && \
+    $VENV_PATH/bin/pip install --no-cache-dir gunicorn
 
 # Copy the rest of the application
 COPY . .
@@ -26,5 +27,5 @@ COPY . .
 EXPOSE 8080
 
 # Gunicorn entrypoint
-ENTRYPOINT ["gunicorn"]
+ENTRYPOINT ["/app/.venv/bin/gunicorn"]
 CMD ["--config", "gunicorn_config.py", "app:app"]

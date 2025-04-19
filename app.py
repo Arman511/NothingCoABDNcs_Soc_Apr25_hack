@@ -18,7 +18,9 @@ app.secret_key = os.getenv("SECRET_KEY")
 app.permanent_session_lifetime = 60 * 60 * 24 * 7  # 1 week
 app.debug = True
 # MongoDB connection
-client: MongoClient = MongoClient(os.getenv("MONGODB_URI"))
+client: MongoClient = MongoClient(
+    os.getenv("MONGODB_URI", "").replace("'", "").replace('"', "")
+)
 db = client["mydatabase"]
 
 
