@@ -7,11 +7,8 @@
                 <label for="course" class="label">Course</label>
                 <select id="course" name="course" class="field" required>
                     <option value="" disabled selected>Select a course</option>
-                    {% for course in courses %}
-                        <option value="{{ course }}">{{ course }}</option>
-                    {% endfor %}
+                    {% for course in courses %}<option value="{{ course }}">{{ course }}</option>{% endfor %}
                 </select>
-
                 <label for="name" class="label">Tutorial Name</label>
                 <input id="name"
                        type="text"
@@ -19,79 +16,84 @@
                        class="field"
                        placeholder="Tutorial Name"
                        required />
-
                 <label for="description" class="label">Description</label>
                 <textarea id="description"
                           name="tutorial_description"
                           class="field"
                           placeholder="Description"
                           required></textarea>
-
                 <label for="release_date" class="label">Release Date</label>
                 <input id="release_date"
                        type="date"
                        name="tutorial_release_date"
                        class="field"
                        required />
-
                 <label for="due_date" class="label">Due Date</label>
                 <input id="due_date"
                        type="date"
                        name="tutorial_due_date"
                        class="field"
                        required />
-
                 <label for="answer_release_date" class="label">Answer Release Date</label>
                 <input id="answer_release_date"
                        type="date"
                        name="tutorial_answer_release_date"
                        class="field"
                        required />
-
                 <div id="questions-section">
                     <label class="label">Questions</label>
-                    <div class="question" id="question-1">
-                        <label for="question-1-text" class="label">Question 1</label>
-                        <input id="question-1-text"
-                               type="text"
-                               name="questions[0][question_text]"
-                               class="field"
-                               placeholder="Enter question text"
-                               required />
-                    </div>
                 </div>
                 <button type="button" id="add-question" class="btn">Add Question</button>
-
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
                         const questionsSection = document.getElementById('questions-section');
                         const addQuestionButton = document.getElementById('add-question');
-                        let questionCount = 1;
 
-                        addQuestionButton.addEventListener('click', function () {
-                            questionCount++;
-                            const newQuestion = document.createElement('div');
-                            newQuestion.classList.add('question');
-                            newQuestion.id = `question-${questionCount}`;
-                            newQuestion.innerHTML = `
-                                <label for="question-${questionCount}-text" class="label">Question ${questionCount}</label>
-                                <input id="question-${questionCount}-text"
-                                       type="text"
-                                       name="questions[${questionCount - 1}][question_text]"
-                                       class="field"
-                                       placeholder="Enter question text"
-                                       required />
+                        let questionCount = 0;
+
+                        function createQuestionBlock(customId = "") {
+                            const index = questionCount++;
+                            const wrapper = document.createElement('div');
+                            wrapper.classList.add('question');
+                            wrapper.id = `question-${index}`;
+
+                            wrapper.innerHTML = `
+                                <label class="label">Question ID (e.g., 1a, 2):</label>
+                                <input type="text" name="questions[${index}][custom_id]" class="field" placeholder="Enter question ID" value="${customId}" required />
+
+                                <label class="label">Title:</label>
+                                <input type="text" name="questions[${index}][question_title]" class="field" placeholder="Enter question title" required />
+
+                                <label class="label">Hint:</label>
+                                <input type="text" name="questions[${index}][question_hint]" class="field" placeholder="Enter hint" />
+
+                                <label class="label">Answer:</label>
+                                <input type="text" name="questions[${index}][question_answer]" class="field" placeholder="Enter answer" required />
+
+                                <button type="button" class="remove-question btn">Remove</button>
+                                <hr />
                             `;
-                            questionsSection.appendChild(newQuestion);
+
+                            // Add remove event
+                            wrapper.querySelector('.remove-question').addEventListener('click', function () {
+                                questionsSection.removeChild(wrapper);
+                            });
+
+                            questionsSection.appendChild(wrapper);
+                        }
+
+                        addQuestionButton.addEventListener('click', () => {
+                            createQuestionBlock();
                         });
+
+                        // Start with one question by default
+                        createQuestionBlock("1");
                     });
                 </script>
-
                 <p class="error error--hidden"></p>
                 <input type="submit" value="ADD TUTORIAL" class="btn" id="submit" />
             </form>
         </div>
     </div>
-    
     <script src="/static/add_tutorial/script.js"></script>
 {% endblock content %}
