@@ -7,7 +7,7 @@ from passlib.hash import pbkdf2_sha512
 
 from dotenv import load_dotenv
 
-from tutorial import make_tutorial
+from tutorial.tutorial import make_tutorial
 
 load_dotenv()
 app = Flask(__name__)
@@ -63,8 +63,13 @@ def professor_login():
     Route for professor login.
     """
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        username = data.get("username")
+        password = data.get("password")
+        if not username or not password:
+            return jsonify({"error": "Username and password are required"}), 400
 
         prof = professors_collection.find_one(
             {
@@ -88,8 +93,13 @@ def student_login():
     Route for student login.
     """
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        username = data.get("username")
+        password = data.get("password")
+        if not username or not password:
+            return jsonify({"error": "Username and password are required"}), 400
 
         student = students_collection.find_one(
             {
