@@ -40,7 +40,7 @@ def add_professor_routes(app):
         """
         Route for professor dashboard.
         """
-        return render_template("professor_dashboard.html")
+        return render_template("dash_prof.html")
 
     @app.route("/professor/login", methods=["POST"])
     def professor_login():
@@ -58,7 +58,7 @@ def add_professor_routes(app):
             if not username or not password:
                 return jsonify({"error": "Username and password are required"}), 400
 
-            prof = db.professors_collection.find_one(
+            prof = db.professors.find_one(
                 {
                     "email": username,
                 }

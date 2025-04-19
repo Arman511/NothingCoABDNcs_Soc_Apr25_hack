@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="card-wrapper">
+        <div class="card add-course-card">
+            <h1 class="center">Add Course</h1>
+            <form class="add_course_form" name="add_course_form" method="post">
+                <label for="course_id" class="label">Course ID</label>
+                <input id="course_id"
+                       type="text"
+                       name="course_id"
+                       class="field"
+                       placeholder="Course ID"
+                       required />
+                <label for="course_name" class="label">Course Name</label>
+                <input id="course_name"
+                       type="text"
+                       name="course_name"
+                       class="field"
+                       placeholder="Course Name"
+                       required />
+                <label for="description" class="label">Description</label>
+                <textarea id="description"
+                          name="description"
+                          class="field"
+                          placeholder="Course Description"
+                          required></textarea>
+                <p class="error error--hidden"></p>
+                <input type="submit" value="Add Course" class="btn" id="submit" />
+            </form>
+        </div>
+        <script src="/static/add_course/script.js"></script>
+    </div>
+{% endblock content %}

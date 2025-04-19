@@ -41,7 +41,7 @@ def add_student_routes(app):
             if not username or not password:
                 return jsonify({"error": "Username and password are required"}), 400
 
-            student = db.students_collection.find_one(
+            student = db.students.find_one(
                 {
                     "email": username,
                 }
@@ -55,3 +55,34 @@ def add_student_routes(app):
                 return redirect("/student/dashboard")
 
         return render_template("login_stu.html")
+
+    @app.route("/professor/update_student", methods=["POST"])
+    def update_student():
+        """
+        Route for updating a student.
+        """
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+
+        email = data.get("email")
+        courses = data.get("courses")
+        
+        if not email or not courses:
+            return jsonify({"error": "Courses are required"}), 400
+        
+        return Student().update_student_course_info(data)
+    
+    @app.route("/student/dashboard", methods=["GET"])
+    def student_dashboard():
+        """
+        Route for student dashboard.
+        """
+        if "student" not in session:
+            return redirect("/student/login")
+
+        return render_template("dash_stu.html")
+        
+        
+        
+

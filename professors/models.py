@@ -12,12 +12,12 @@ class Professor:
         from app import db
 
         # Check if the professor already exists
-        if db.professors_collection.find_one({"email": professor["email"]}):
+        if db.professors.find_one({"email": professor["email"]}):
             return jsonify({"error": "Professor already exists"}), 400
 
         # Hash the password and save the professor
         hashed_password = pbkdf2_sha512.hash(professor["password"])
-        db.professors_collection.insert_one(
+        db.professors.insert_one(
             {
                 "_id": uuid.uuid1().hex,
                 "email": professor["email"],
