@@ -50,7 +50,6 @@ document.addEventListener("DOMContentLoaded", function () {
             form.reset();
             document.getElementById("questions-section").innerHTML = "";
             questionCount = 0;
-            createQuestionBlock("1"); // Re-add first question
         } catch (err) {
             errorElement.textContent = "Request failed.";
             errorElement.classList.remove("error--hidden");

@@ -25,9 +25,7 @@ def add_tutorial_routes(app):
                 return jsonify({"error": "No data provided"}), 400
 
             # Call the make_tutorial function with the provided data
-            tutorial_id = tutorial.make_tutorial(data)
-
-            return jsonify({"tutorial_id": tutorial_id}), 200
+            return tutorial.make_tutorial(data)
 
         return render_template(
             "add_tutorial.html", courses=course.get_all_courses_ids()

@@ -1,6 +1,6 @@
 import uuid
 
-from flask import session
+from flask import jsonify, session
 
 
 def make_tutorial(data):
@@ -17,7 +17,6 @@ def make_tutorial(data):
         "tutorial_due_date",
         "tutorial_description",
         "tutorial_answer_release_date",
-        "tutorial_questions",
     ]
 
     # Validate required fields
@@ -46,19 +45,31 @@ def make_tutorial(data):
 
     if not course.course_exists(course_id):
         print(f"Course with ID '{course_id}' does not exist.")
-        raise ValueError(f"Course with ID '{course_id}' does not exist.")
+        return jsonify(
+            {"error": f"Course with ID '{course_id}' does not exist."},
+            404,
+        )
 
     # Check if dates are valid
 
     if data["tutorial_release_date"] > data["tutorial_due_date"]:
         print("Release date cannot be after due date.")
-        raise ValueError("Release date cannot be after due date.")
+        return jsonify(
+            {"error": "Release date cannot be after due date."},
+            400,
+        )
     if data["tutorial_due_date"] > data["tutorial_answer_release_date"]:
         print("Due date cannot be after answer release date.")
-        raise ValueError("Due date cannot be after answer release date.")
+        return jsonify(
+            {"error": "Due date cannot be after answer release date."},
+            400,
+        )
     if data["tutorial_answer_release_date"] < data["tutorial_release_date"]:
         print("Answer release date cannot be before release date.")
-        raise ValueError("Answer release date cannot be before release date.")
+        return jsonify(
+            {"error": "Answer release date cannot be before release date."},
+            400,
+        )
 
     # Construct the tutorial object
     tutorial = {
@@ -80,7 +91,10 @@ def make_tutorial(data):
         print(f"Failed to create tutorial: {e}")
         raise RuntimeError("Database operation failed.") from e
 
-    return tutorial_id
+    return (
+        {"message": "Tutorial created successfully.", "tutorial_id": tutorial_id},
+        201,
+    )
 
 
 def get_tutorial_by_uuid(tutorial_uuid):
