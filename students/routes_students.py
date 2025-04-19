@@ -82,6 +82,20 @@ def add_student_routes(app):
             return redirect("/student/login")
 
         return render_template("dash_stu.html")
+    
+    @app.route("/student/mycourses", methods=["GET"]) 
+    def student_mycourses():
+        """
+        Route for student courses.
+        """
+        if "student" not in session:
+            return redirect("/student/login")
+        
+        student_courses = Student().get_student_courses(session["student"])
+        if not student_courses:
+            return jsonify({"error": "No courses found"}), 404
+        
+        return render_template("mycourses_stu.html", courses=student_courses)
         
         
         

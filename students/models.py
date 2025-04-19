@@ -78,6 +78,17 @@ class Student:
 
         return jsonify({"message": "Student updated successfully"}), 200
     
+    def get_student_courses(self, student):
+        """Get a student's courses from the database"""
+
+        from app import db
+
+        student = db.students.find_one({"email": student["email"]})
+        if student is None:
+            return jsonify({"error": "Student not found"}), 404
+
+        return jsonify({"courses": student["course"]}), 200
+    
     
     
     
