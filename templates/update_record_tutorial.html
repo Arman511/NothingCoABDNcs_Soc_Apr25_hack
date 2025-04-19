@@ -2,7 +2,7 @@
 {% block content %}
     <div class="card-wrapper">
         <div class="card">
-            <h1 class="center">Tutorial: {{ tutorial.tutorial_name }}</h1>
+            <h1 class="center" id="uuid" data-id="{{ tutorial.tutorial_id }}">Tutorial: {{ tutorial.tutorial_name }}</h1>
             <p>
                 <strong>Course:</strong> {{ tutorial.course }}
             </p>
@@ -22,15 +22,18 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th>Number</th>
                         <th>Question</th>
                         <th>Hint</th>
                         <th>Answer</th>
                         <th>Rate (1-5)</th>
+                        <th>Comment</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for question in tutorial.tutorial_questions %}
                         <tr>
+                            <td>{{ question.custom_id }}</td>
                             <td>{{ question.question_title }}</td>
                             <td>
                                 {% if question.question_hint %}
@@ -42,17 +45,23 @@
                             </td>
                             <td>
                                 <select name="rating_{{ question.custom_id }}">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
+                                    {% for i in range(1, 6) %}
+                                        <option value="{{ i }}" {% if question.rating == i %}selected{% endif %}>{{ i }}</option>
+                                    {% endfor %}
                                 </select>
+                            </td>
+                            <td>
+                                <textarea name="comment_{{ question.custom_id }}" rows="2" cols="20">
+                                    {% if question.comment %}{{ question.comment }}{% endif %}
+                                </textarea>
                             </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            <button id="submit" class="btn btn-primary mt-3">Submit Ratings</button>
+            <p class="error error--hidden"></p>
+            <p class="success success--hidden"></p>
         </div>
     </div>
     <script>
@@ -60,4 +69,5 @@
             alert(hint);
         }
     </script>
+    <script src="/static/update_tutorial_record/script.js"></script>
 {% endblock content %}

@@ -122,19 +122,40 @@ def update_student_tutorial(data, tutorial_uuid):
         print("No data provided.")
         raise ValueError("No data provided.")
 
-    # Update the tutorial record in the database
-    try:
-        db.tutorial_student.update_one(
-            {"tutorial_id": tutorial_uuid, "student_id": session.get("student")},
-            {"$set": data},
-            upsert=True,
-        )
-        print(f"Tutorial record for UUID '{tutorial_uuid}' updated successfully.")
+    rating = data.get("ratings")
+    comments = data.get("comments")
 
-        return {"message": "Tutorial record updated successfully."}, 200
-    except Exception as e:
-        print(f"Failed to update tutorial record: {e}")
+    if not rating:
+        print("Rating is required.")
         return (
-            {"error": "Failed to update tutorial record."},
-            500,
+            {"error": "Rating is required."},
+            400,
         )
+
+    tutorial_rec = db.tutorial_student.find_one(
+        {"tutorial_id": tutorial_uuid, "student_id": session.get("student")}
+    )
+    if not tutorial_rec:
+        print("No tutorial record found.")
+        return (
+            {"error": "No tutorial record found."},
+            404,
+        )
+
+    for question in tutorial_rec["tutorial_questions"]:
+        question["rating"] = rating[question["custom_id"]]
+        question["comment"] = comments[question["custom_id"]].strip()
+
+    db.tutorial_student.update_one(
+        {"tutorial_id": tutorial_uuid, "student_id": session.get("student")},
+        {
+            "$set": {
+                "tutorial_questions": tutorial_rec["tutorial_questions"],
+            }
+        },
+    )
+
+    return (
+        {"message": "Tutorial record updated successfully."},
+        200,
+    )

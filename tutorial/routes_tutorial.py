@@ -1,4 +1,5 @@
 from datetime import datetime
+import uuid
 from flask import jsonify, render_template, request, session
 
 from course import course
@@ -77,8 +78,8 @@ def add_tutorial_routes(app):
         """
         from app import db
 
-        uuid = request.args.get("uuid")
-        if not uuid:
+        target_uuid = request.args.get("uuid")
+        if not target_uuid:
             return jsonify({"error": "No UUID provided"}), 400
 
         if request.method == "POST":
@@ -87,16 +88,16 @@ def add_tutorial_routes(app):
                 return jsonify({"error": "No data provided"}), 400
 
             # Call the update_tutorial function with the provided data
-            return tutorial.update_student_tutorial(data, uuid)
+            return tutorial.update_student_tutorial(data, target_uuid)
 
         student_uuid = session.get("student")
         student_rec = Student().get_student_by_uuid(student_uuid)
         if not student_rec:
             return jsonify({"error": "No student found"}), 404
 
-        tut = tutorial.get_tutorial_by_uuid(uuid)
+        tut = tutorial.get_tutorial_by_uuid(target_uuid)
         tutorial_student_rec = db.tutorial_student.find_one(
-            {"tutorial_id": uuid, "student_id": student_uuid}
+            {"tutorial_id": target_uuid, "student_id": student_uuid}
         )
 
         if not tutorial_student_rec:
@@ -110,11 +111,13 @@ def add_tutorial_routes(app):
                 return jsonify({"error": "You are not enrolled in this course"}), 403
 
             tutorial_student_rec = {
+                "_id": uuid.uuid4().hex,
                 "tutorial_id": tut["_id"],
                 "student_id": student_uuid,
                 "tutorial_name": tut["tutorial_name"],
                 "tutorial_due_date": tut["tutorial_due_date"],
                 "tutorial_release_date": tut["tutorial_release_date"],
+                "tutorial_answer_release_date": tut["tutorial_answer_release_date"],
                 "tutorial_answer_release_date_passed": datetime.strptime(
                     tut["tutorial_answer_release_date"], "%Y-%m-%d"
                 )
@@ -123,6 +126,10 @@ def add_tutorial_routes(app):
                 "tutorial_questions": tut["tutorial_questions"],
                 "tutorial_description": tut["tutorial_description"],
             }
+            for question in tutorial_student_rec["tutorial_questions"]:
+                question["rating"] = 1
+                question["comment"] = ""
+            db.tutorial_student.insert_one(tutorial_student_rec)
             return render_template(
                 "update_record_tutorial.html",
                 tutorial=tutorial_student_rec,
