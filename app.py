@@ -1,4 +1,5 @@
 from functools import wraps
+import uuid
 from flask import Flask, jsonify, redirect, render_template, request, session
 from pymongo import MongoClient
 import os
@@ -12,9 +13,13 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 app.permanent_session_lifetime = 60 * 60 * 24 * 7  # 1 week
+app.debug = True
 # MongoDB connection
 client: MongoClient = MongoClient(os.getenv("MONGODB_URI"))
 db = client["mydatabase"]
+
+students_collection = db["students"]
+professors_collection = db["professors"]
 
 
 def prof_login_required(f):
@@ -61,7 +66,7 @@ def professor_login():
         username = request.form["username"]
         password = request.form["password"]
 
-        prof = db.proffessor.find_one(
+        prof = professors_collection.find_one(
             {
                 "username": username,
             }
@@ -74,7 +79,7 @@ def professor_login():
 
             return redirect("/professor/dashboard")
 
-    return render_template("professor_login.html")
+    return render_template("login_prof.html")
 
 
 @app.route("/student/login", methods=["GET", "POST"])
@@ -86,7 +91,7 @@ def student_login():
         username = request.form["username"]
         password = request.form["password"]
 
-        student = db.students.find_one(
+        student = students_collection.find_one(
             {
                 "username": username,
             }
@@ -99,7 +104,7 @@ def student_login():
 
             return redirect("/student/dashboard")
 
-    return render_template("student_login.html")
+    return render_template("login_stu.html")
 
 
 @app.route("/admin", methods=["GET"])
@@ -159,12 +164,14 @@ def add_student():
         return jsonify({"error": "Email and password are required"}), 400
 
     # Check if the student already exists
-    if db.students.find_one({"email": email}):
+    if students_collection.find_one({"email": email}):
         return jsonify({"error": "Student already exists"}), 400
 
     # Hash the password and save the student
     hashed_password = pbkdf2_sha512.hash(password)
-    db.students.insert_one({"email": email, "password": hashed_password})
+    students_collection.insert_one(
+        {"_id": uuid.uuid1().hex, "email": email, "password": hashed_password}
+    )
 
     return jsonify({"message": "Student added successfully"}), 201
 
@@ -185,11 +192,17 @@ def add_professor():
         return jsonify({"error": "Email and password are required"}), 400
 
     # Check if the professor already exists
-    if db.proffessor.find_one({"email": email}):
+    if professors_collection.find_one({"email": email}):
         return jsonify({"error": "Professor already exists"}), 400
 
     # Hash the password and save the professor
     hashed_password = pbkdf2_sha512.hash(password)
-    db.proffessor.insert_one({"email": email, "password": hashed_password})
+    professors_collection.insert_one(
+        {"_id": uuid.uuid1().hex, "email": email, "password": hashed_password}
+    )
 
     return jsonify({"message": "Professor added successfully"}), 201
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
