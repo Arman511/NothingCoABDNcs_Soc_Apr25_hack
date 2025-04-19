@@ -1,5 +1,4 @@
-from flask import jsonify, redirect, render_template, request, session
-from passlib.hash import pbkdf2_sha512
+from flask import jsonify, render_template, request
 
 import route_wrapper
 from .models import Professor
@@ -26,14 +25,6 @@ def add_professor_routes(app):
 
         return Professor().register_professor(data)
 
-    @app.route("/professor/logout", methods=["GET"])
-    def logout():
-        """
-        Route for logging out.
-        """
-        session.pop("professor", None)
-        return redirect("/")
-
     @app.route("/professor/dashboard", methods=["GET"])
     @route_wrapper.prof_login_required
     def professor_dashboard():
@@ -41,34 +32,3 @@ def add_professor_routes(app):
         Route for professor dashboard.
         """
         return render_template("dash_prof.html")
-
-    @app.route("/professor/login", methods=["POST"])
-    def professor_login():
-        """
-        Route for professor login.
-        """
-        from app import db
-
-        if request.method == "POST":
-            data = request.get_json()
-            if not data:
-                return jsonify({"error": "No data provided"}), 400
-            username = data.get("username")
-            password = data.get("password")
-            if not username or not password:
-                return jsonify({"error": "Username and password are required"}), 400
-
-            prof = db.professors.find_one(
-                {
-                    "email": username,
-                }
-            )
-
-            if prof is None:
-                return jsonify({"error": "Invalid username or password"}), 401
-            if pbkdf2_sha512.verify(password, prof["password"]):
-                session["professor"] = username
-
-                return redirect("/professor/dashboard")
-
-        return render_template("login_prof.html")

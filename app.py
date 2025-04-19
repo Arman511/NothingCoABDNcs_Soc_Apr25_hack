@@ -34,11 +34,14 @@ def admin():
     """
     return render_template("admin.html")
 
-@app.route("/login", methods=["GET","POST"])
+
+@app.route("/login", methods=["GET", "POST"])
 def login():
     """
     Route for login.
     """
+    session.pop("student", None)
+    session.pop("professor", None)
     if request.method == "POST":
         data = request.get_json()
         if not data:
@@ -59,7 +62,7 @@ def login():
             if not pbkdf2_sha512.verify(password, prof["password"]):
                 return jsonify({"error": "Invalid username or password"}), 401
             session["professor"] = prof["_id"]
-            return jsonify({"message": "Login successful"}), 200
+            return jsonify({"message": "/professor/dashboard"}), 200
         else:
             # Student login
             student = db.students.find_one(
@@ -72,10 +75,19 @@ def login():
             if not pbkdf2_sha512.verify(password, student["password"]):
                 return jsonify({"error": "Invalid username or password"}), 401
             session["student"] = student["_id"]
-            return jsonify({"message": "Login successful"}), 200
-
+            return jsonify({"message": "/student/dashboard"}), 200
 
     return render_template("login.html")
+
+
+@app.route("/logout", methods=["GET"])
+def logout():
+    """
+    Route for logout.
+    """
+    session.pop("student", None)
+    session.pop("professor", None)
+    return jsonify({"message": "Logout successful"}), 200
 
 
 add_student_routes(app)
