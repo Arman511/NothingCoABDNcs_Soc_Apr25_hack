@@ -79,3 +79,14 @@ class Student:
         )
 
         return jsonify({"message": "Student updated successfully"}), 200
+
+    def get_student_by_uuid(self, student_uuid):
+        """Get a student by UUID from the database"""
+
+        from app import db
+
+        student = db.students.find_one({"_id": student_uuid})
+        if student is None:
+            return jsonify({"error": "Student not found"}), 404
+
+        return student

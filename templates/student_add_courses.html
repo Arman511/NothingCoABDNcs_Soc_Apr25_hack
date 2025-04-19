@@ -3,33 +3,32 @@
     <div class="card-wrapper">
         <div class="card">
             <form id="updateForm" class="form-group">
-                <h1 class="center">Update your Current Courses</h1>
+                <h1 class="center">Update Your Current Courses</h1>
                 <label for="courses">Courses:</label>
                 <select id="courses" name="courses" class="form-control" multiple required>
                     {% for course in courses %}
                         <option value="{{ course._id }}"
                                 {% if course.course_id in student.courses %}selected{% endif %}
                                 title="{{ course.description }}">
-                            {{ course.course_id + ": " + course.course_name }}
+                            {{ course.course_id }}: {{ course.course_name }}
                         </option>
                     {% endfor %}
                 </select>
                 <p class="error error--hidden"></p>
                 <p class="success success--hidden"></p>
-                <input type="submit" value="Update" class="btn" />
+                <input type="submit" value="Update" class="btn btn-primary mt-3" />
             </form>
-            <script>
-                $(document).ready(function () {
-                    
-                    $('#course').selectize({
-                        plugins: ["remove_button"],
-                        sortField: 'text',
-                        dropdownParent: 'body'
-                    });
-                    
-                });
-            </script>
-            <script src="/static/student_add_course/script.js"></script>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize Selectize on the courses select element
+            $('#courses').selectize({
+                placeholder: 'Select courses',
+                allowEmptyOption: true,
+                maxItems: null,
+                plugins: ['remove_button']
+            });
+        });
+    </script>
 {% endblock content %}

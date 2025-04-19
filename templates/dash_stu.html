@@ -1,4 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="card-wrapper"></div>
+    <div class="card-wrapper">
+        <p>
+            <a href="{{ url_for("student_add_update_courses") }}">My Courses</a>
+        </p>
+    </div>
 {% endblock content %}

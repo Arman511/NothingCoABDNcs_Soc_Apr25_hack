@@ -83,5 +83,7 @@ def add_student_routes(app):
             student["courses"] = []
 
         return render_template(
-            "add_update_courses.html", courses=course.get_all_courses(), student=student
+            "student_add_courses.html",
+            courses=course.get_all_courses(),
+            student=student,
         )
