@@ -7,18 +7,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
+        const isProf = document.getElementById("isProf").checked;
 
         try {
-            const response = await fetch("/student/login", {
+            const response = await fetch("/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ username: email, password: password }),
+                body: JSON.stringify({
+                    isProf: isProf,
+                    username: email,
+                    password: password,
+                }),
             });
 
             if (response.ok) {
-                window.location.href = "/student/dashboard";
+                let data = await response.json();
+
+                window.location.href = data.message;
             } else {
                 const errorData = await response.json();
                 errorElement.textContent = errorData.error || "Login failed";

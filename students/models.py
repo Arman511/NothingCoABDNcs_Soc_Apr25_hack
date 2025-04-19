@@ -1,5 +1,5 @@
 import uuid
-from flask import jsonify
+from flask import jsonify, session
 from passlib.hash import pbkdf2_sha512
 
 
@@ -59,19 +59,21 @@ class Student:
 
         return jsonify({"message": "Student deleted successfully"}), 200
 
-    def update_student_course_info(self, student):
+    def update_student_course_info(self, courses):
         """Update a student in the database"""
 
         from app import db
 
-        if not db.students.find_one({"email": student["email"]}):
+        student_uuid = session.get("student")
+
+        if not db.students.find_one({"_id": student_uuid}):
             return jsonify({"error": "Student not found"}), 404
 
-        db.students_collection.update_one(
-            {"email": student["email"]},
+        db.students.update_one(
+            {"_id": student_uuid},
             {
                 "$set": {
-                    "course": student["course"],
+                    "courses": courses,
                 }
             },
         )
