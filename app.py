@@ -1,14 +1,14 @@
-from functools import wraps
-import uuid
-from flask import Flask, jsonify, redirect, render_template, request, session
+from flask import Flask, render_template
 from pymongo import MongoClient
 import os
-from passlib.hash import pbkdf2_sha512
 
 from dotenv import load_dotenv
 
 
+from professors.routes_professors import add_professor_routes
+from students.routes_students import add_student_routes
 from tutorial.routes_tutorial import add_tutorial_routes
+
 
 load_dotenv()
 app = Flask(__name__)
@@ -28,66 +28,6 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/professor/login", methods=["GET", "POST"])
-def professor_login():
-    """
-    Route for professor login.
-    """
-    if request.method == "POST":
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "No data provided"}), 400
-        username = data.get("username")
-        password = data.get("password")
-        if not username or not password:
-            return jsonify({"error": "Username and password are required"}), 400
-
-        prof = professors_collection.find_one(
-            {
-                "email": username,
-            }
-        )
-
-        if prof is None:
-            return jsonify({"error": "Invalid username or password"}), 401
-        if pbkdf2_sha512.verify(password, prof["password"]):
-            session["professor"] = username
-
-            return redirect("/professor/dashboard")
-
-    return render_template("login_prof.html")
-
-
-@app.route("/student/login", methods=["GET", "POST"])
-def student_login():
-    """
-    Route for student login.
-    """
-    if request.method == "POST":
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "No data provided"}), 400
-        username = data.get("username")
-        password = data.get("password")
-        if not username or not password:
-            return jsonify({"error": "Username and password are required"}), 400
-
-        student = students_collection.find_one(
-            {
-                "username": username,
-            }
-        )
-
-        if student is None:
-            return jsonify({"error": "Invalid username or password"}), 401
-        if pbkdf2_sha512.verify(password, student["password"]):
-            session["student"] = username
-
-            return redirect("/student/dashboard")
-
-    return render_template("login_stu.html")
-
-
 @app.route("/admin", methods=["GET"])
 def admin():
     """
@@ -96,79 +36,8 @@ def admin():
     return render_template("admin.html")
 
 
-@app.route("/professor/dashboard", methods=["GET"])
-@prof_login_required
-def professor_dashboard():
-    """
-    Route for professor dashboard.
-    """
-    return render_template("professor_dashboard.html")
-
-
-@app.route("/logout", methods=["GET"])
-def logout():
-    """
-    Route for logging out.
-    """
-    session.pop("professor", None)
-    return redirect("/")
-
-
-@app.route("/add_student", methods=["POST"])
-def add_student():
-    """
-    Route for adding a student.
-    """
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-
-    email = data.get("email")
-    password = data.get("password")
-
-    if not email or not password:
-        return jsonify({"error": "Email and password are required"}), 400
-
-    # Check if the student already exists
-    if students_collection.find_one({"email": email}):
-        return jsonify({"error": "Student already exists"}), 400
-
-    # Hash the password and save the student
-    hashed_password = pbkdf2_sha512.hash(password)
-    students_collection.insert_one(
-        {"_id": uuid.uuid1().hex, "email": email, "password": hashed_password}
-    )
-
-    return jsonify({"message": "Student added successfully"}), 201
-
-
-@app.route("/add_professor", methods=["POST"])
-def add_professor():
-    """
-    Route for adding a professor.
-    """
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-
-    email = data.get("email")
-    password = data.get("password")
-
-    if not email or not password:
-        return jsonify({"error": "Email and password are required"}), 400
-
-    # Check if the professor already exists
-    if professors_collection.find_one({"email": email}):
-        return jsonify({"error": "Professor already exists"}), 400
-
-    # Hash the password and save the professor
-    hashed_password = pbkdf2_sha512.hash(password)
-    professors_collection.insert_one(
-        {"_id": uuid.uuid1().hex, "email": email, "password": hashed_password}
-    )
-
-    return jsonify({"message": "Professor added successfully"}), 201
-
+add_student_routes(app)
+add_professor_routes(app)
 
 # Add other routes
 add_tutorial_routes(app)
