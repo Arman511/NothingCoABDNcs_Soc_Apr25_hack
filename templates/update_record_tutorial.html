@@ -1,47 +1,54 @@
 {% extends "base.html" %}
+
 {% block content %}
-    <div class="card-wrapper">
-        <div class="card">
-            <h1 class="center">Tutorial: {{ tutorial.tutorial_name }}</h1>
-            <p>
-                <strong>Course:</strong> {{ tutorial.course }}
-            </p>
-            <p>
-                <strong>Description:</strong> {{ tutorial.tutorial_description }}
-            </p>
-            <p>
-                <strong>Release Date:</strong> {{ tutorial.tutorial_release_date }}
-            </p>
-            <p>
-                <strong>Due Date:</strong> {{ tutorial.tutorial_due_date }}
-            </p>
-            <p>
-                <strong>Answer Release Date:</strong> {{ tutorial.tutorial_answer_release_date }}
-            </p>
-            <h2>Questions</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Question</th>
-                        <th>Hint</th>
-                        <th>Answer</th>
-                        <th>Rate (1-5)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for question in tutorial.tutorial_questions %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white shadow-xl rounded-2xl p-6 space-y-6">
+        <h1 class="text-3xl font-bold text-center text-gray-800">Tutorial: {{ tutorial.tutorial_name }}</h1>
+
+        <div class="text-gray-700 space-y-2">
+            <p><span class="font-semibold">Course:</span> {{ tutorial.course }}</p>
+            <p><span class="font-semibold">Description:</span> {{ tutorial.tutorial_description }}</p>
+            <p><span class="font-semibold">Release Date:</span> {{ tutorial.tutorial_release_date }}</p>
+            <p><span class="font-semibold">Due Date:</span> {{ tutorial.tutorial_due_date }}</p>
+            <p><span class="font-semibold">Answer Release Date:</span> {{ tutorial.tutorial_answer_release_date }}</p>
+        </div>
+
+        <div>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Questions</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm text-left text-gray-700 border border-gray-200 rounded-xl">
+                    <thead class="bg-gray-100 text-xs uppercase text-gray-600">
                         <tr>
-                            <td>{{ question.question_title }}</td>
-                            <td>
+                            <th class="px-4 py-3">Question</th>
+                            <th class="px-4 py-3">Hint</th>
+                            <th class="px-4 py-3">Answer</th>
+                            <th class="px-4 py-3 text-center">Rate (1–5)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for question in tutorial.tutorial_questions %}
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-4 py-3">{{ question.question_title }}</td>
+                            <td class="px-4 py-3">
                                 {% if question.question_hint %}
-                                    <button onclick="showHint('{{ question.question_hint }}')">Show Hint</button>
+                                    <button onclick="showHint('{{ question.question_hint | escape }}')"
+                                            class="text-indigo-600 hover:underline font-medium">
+                                        Show Hint
+                                    </button>
+                                {% else %}
+                                    <span class="text-gray-400 italic">None</span>
                                 {% endif %}
                             </td>
-                            <td>
-                                {% if tutorial.tutorial_answer_release_date_passed %}{{ question.question_answer }}{% endif %}
+                            <td class="px-4 py-3">
+                                {% if tutorial.tutorial_answer_release_date_passed %}
+                                    {{ question.question_answer }}
+                                {% else %}
+                                    <span class="text-gray-400 italic">Not released</span>
+                                {% endif %}
                             </td>
-                            <td>
-                                <select name="rating_{{ question.custom_id }}">
+                            <td class="px-4 py-3 text-center">
+                                <select name="rating_{{ question.custom_id }}"
+                                        class="border-gray-300 rounded-lg px-2 py-1">
                                     <option value="1">1</option>
                                     <option value="2">2</option>
                                     <option value="3">3</option>
@@ -50,14 +57,17 @@
                                 </select>
                             </td>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-    <script>
-        function showHint(hint) {
-            alert(hint);
-        }
-    </script>
+</div>
+
+<script>
+    function showHint(hint) {
+        alert(hint);
+    }
+</script>
 {% endblock content %}
