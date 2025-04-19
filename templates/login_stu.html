@@ -8,28 +8,39 @@
                 <input id="email"
                        type="email"
                        name="email"
-                       class="field"
-                       placeholder="Email"
+                       class="field input validator"
+                       placeholder="mail@site.com"
                        autocomplete="email"
                        required />
+                <div class="validator-hint">Enter valid email address</div>
                 <div class="password-container">
                     <label for="password" class="label">Password</label>
                     <input id="password"
                            type="password"
                            name="password"
-                           class="field"
+                           class="field input validator"
                            placeholder="Password"
+                           minlength="8"
+                           maxlength="20"
                            autocomplete="password"
                            required />
+                    <p class="validator-hint">
+                        Must be more than 8 characters, including
+                        <br />
+                        At least one number
+                        <br />
+                        At least one lowercase letter
+                        <br />
+                        At least one uppercase letter
+                    </p>
                 </div>
                 <p class="error error--hidden"></p>
                 <input type="submit" value="Log In" class="btn" id="submit" />
             </form>
             <p class="center">
                 Are you a Professor?
-                <a href="{{ url_for("professor_login") }}">Professor Login</a>
+                <a href="{{ url_for("professor_login") }}" class="link link-primary">Professor Login</a>
             </p>
-           
         </div>
         <script src="/static/stu_login/script.js"></script>
     </div>
