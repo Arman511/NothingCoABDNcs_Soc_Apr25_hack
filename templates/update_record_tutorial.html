@@ -1,85 +1,84 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="card-wrapper">
-        <div class="card">
-            <h1 class="center" id="uuid" data-id="{{ tutorial.tutorial_id }}">Tutorial: {{ tutorial.tutorial_name }}</h1>
-            <p>
-                <strong>Course:</strong> {{ tutorial.course }}
-            </p>
-            <p>
-                <strong>Description:</strong> {{ tutorial.tutorial_description }}
-            </p>
-            <p>
-                <strong>Release Date:</strong> {{ tutorial.tutorial_release_date }}
-            </p>
-            <p>
-                <strong>Due Date:</strong> {{ tutorial.tutorial_due_date }}
-            </p>
-            <p>
-                <strong>Answer Release Date:</strong> {{ tutorial.tutorial_answer_release_date }}
-            </p>
-            <h2>Questions</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Number</th>
-                        <th>Question</th>
-                        <th>Hint</th>
-                        <th>Answer</th>
-                        <th>Rate (1-5)</th>
-                        <th>Comment</th>
+<div class="max-w-4xl mx-auto px-4 py-10">
+    <div class="bg-white shadow-xl rounded-2xl p-8 space-y-6">
+        <h1 class="text-3xl font-bold text-center text-indigo-700" id="uuid" data-id="{{ tutorial.tutorial_id }}">
+            Tutorial: {{ tutorial.tutorial_name }}
+        </h1>
+
+        <div class="space-y-4">
+            <p><strong class="text-indigo-600">Course:</strong> {{ tutorial.course }}</p>
+            <p><strong class="text-indigo-600">Description:</strong> {{ tutorial.tutorial_description }}</p>
+            <p><strong class="text-indigo-600">Release Date:</strong> {{ tutorial.tutorial_release_date }}</p>
+            <p><strong class="text-indigo-600">Due Date:</strong> {{ tutorial.tutorial_due_date }}</p>
+            <p><strong class="text-indigo-600">Answer Release Date:</strong> {{ tutorial.tutorial_answer_release_date }}</p>
+        </div>
+
+        <h2 class="text-2xl font-semibold text-indigo-700">Questions</h2>
+
+        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+            <thead>
+                <tr class="bg-indigo-50">
+                    <th class="px-4 py-2 text-left text-gray-700">Number</th>
+                    <th class="px-4 py-2 text-left text-gray-700">Question</th>
+                    <th class="px-4 py-2 text-left text-gray-700">Hint</th>
+                    <th class="px-4 py-2 text-left text-gray-700">Answer</th>
+                    <th class="px-4 py-2 text-left text-gray-700">Rate (1-5)</th>
+                    <th class="px-4 py-2 text-left text-gray-700">Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for question in tutorial.tutorial_questions %}
+                    <tr class="border-b border-gray-100">
+                        <td class="px-4 py-3 text-gray-700">{{ question.custom_id }}</td>
+                        <td class="px-4 py-3 text-gray-700">{{ question.question_title }}</td>
+                        <td class="px-4 py-3 text-gray-700">
+                            {% if question.question_hint %}
+                                <button onclick="showHint('{{ question.question_hint | escape }}')" 
+                                        class="text-indigo-600 hover:underline font-medium">
+                                    Show Hint
+                                </button>
+                            {% else %}
+                                <span class="text-gray-400 italic">None</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-gray-700">
+                            {% if tutorial.tutorial_answer_release_date_passed %}
+                                {{ question.question_answer }}
+                            {% else %}
+                                <span class="text-gray-400 italic">Not released</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3">
+                            <select name="rating_{{ question.custom_id }}" class="form-select block w-full">
+                                {% for i in range(1, 6) %}
+                                    <option value="{{ i }}" {% if question.rating == i %}selected{% endif %}>{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td class="px-4 py-3">
+                            <textarea name="comment_{{ question.custom_id }}" rows="2" cols="20" 
+                                      class="form-textarea w-full">
+                                {% if question.comment %}{{ question.comment }}{% endif %}
+                            </textarea>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    {% for question in tutorial.tutorial_questions %}
-                        <tr>
-                            <td>{{ question.custom_id }}</td>
-                            <td>{{ question.question_title }}</td>
-                            <td>
-                                {% if question.question_hint %}
-                                    <button onclick="showHint('{{ question.question_hint | escape }}')"
-                                            class="text-indigo-600 hover:underline font-medium">Show Hint</button>
-                                {% else %}
-                                    <span class="text-gray-400 italic">None</span>
-                                {% endif %}
-                            </td>
-                            <td class="px-4 py-3">
-                                {% if tutorial.tutorial_answer_release_date_passed %}
-                                    {{ question.question_answer }}
-                                {% else %}
-                                    <span class="text-gray-400 italic">Not released</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <select name="rating_{{ question.custom_id }}">
-                                    {% for i in range(1, 6) %}
-                                        <option value="{{ i }}" {% if question.rating == i %}selected{% endif %}>{{ i }}</option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            <td>
-                                <textarea name="comment_{{ question.custom_id }}" rows="2" cols="20">
-                                    {% if question.comment %}{{ question.comment }}{% endif %}
-                                </textarea>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <button id="submit" class="btn btn-primary mt-3">Submit Ratings</button>
-            <p class="error error--hidden"></p>
-            <p class="success success--hidden"></p>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="mt-6 text-center">
+            <button id="submit" class="btn btn-primary w-full sm:w-auto mt-3">Submit Ratings</button>
+            <p class="error error--hidden text-red-500 mt-4"></p>
+            <p class="success success--hidden text-green-500 mt-4"></p>
         </div>
     </div>
-    <script>
-        function showHint(hint) {
-            alert(hint);
-        }
-    </script>
-    <script src="/static/update_tutorial_record/script.js"></script>
-    <script>
+</div>
+
+<script>
     function showHint(hint) {
         alert(hint);
     }
-    </script>
+</script>
+<script src="/static/update_tutorial_record/script.js"></script>
 {% endblock content %}
