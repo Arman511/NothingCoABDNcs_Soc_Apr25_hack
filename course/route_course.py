@@ -22,8 +22,6 @@ def add_course_routes(app):
                 return jsonify({"error": "No data provided"}), 400
 
             # Call the add_course function with the provided data
-            result = course.add_course(data)
-
-            return jsonify(result), 201
+            return course.add_course(data)
 
         return render_template("add_course.html")

@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch("/add_course", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json; charset=UTF-8",
                 },
                 body: JSON.stringify(courseData),
             });
@@ -35,6 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 alert(result.message || "Course added successfully!");
                 form.reset();
+                errorElement.classList.add("error--hidden");
+                errorElement.textContent = "";
             }
         } catch (error) {
             showError("Failed to connect to the server. Please try again later.");
