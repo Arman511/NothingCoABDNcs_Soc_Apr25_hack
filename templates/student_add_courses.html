@@ -8,7 +8,7 @@
                 <select id="courses" name="courses" class="form-control" multiple required>
                     {% for course in courses %}
                         <option value="{{ course._id }}"
-                                {% if course.course_id in student.courses %}selected{% endif %}
+                                {% if course._id in student.courses %}selected{% endif %}
                                 title="{{ course.description }}">
                             {{ course.course_id }}: {{ course.course_name }}
                         </option>
