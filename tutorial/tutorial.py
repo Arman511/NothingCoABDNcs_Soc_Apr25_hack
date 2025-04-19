@@ -2,59 +2,80 @@ import uuid
 
 
 def make_tutorial(data):
-    from app import db
-
     """
     Function to create a tutorial.
     """
-    print("Creating a tutorial...")
 
-    course = data.get("course")
-    if not course:
-        raise ValueError("Course not found in data.")
-    print(f"Course: {course}")
-    tutorial_name = data.get("tutorial_name")
-    if not tutorial_name:
-        raise ValueError("Tutorial name not found in data.")
+    from app import db
 
-    tutorial_release_date = data.get("tutorial_release_date")
-    if not tutorial_release_date:
-        raise ValueError("Tutorial release date not found in data.")
+    required_fields = [
+        "course",
+        "tutorial_name",
+        "tutorial_release_date",
+        "tutorial_due_date",
+        "tutorial_description",
+        "tutorial_answer_release_date",
+        "tutorial_questions",
+    ]
 
-    tutorial_due_date = data.get("tutorial_due_date")
-    if not tutorial_due_date:
-        raise ValueError("Tutorial due date not found in data.")
+    # Validate required fields
+    for field in required_fields:
+        if field not in data or not data[field]:
+            raise ValueError(f"'{field}' is required but not found in data.")
 
-    tutorial_description = data.get("tutorial_description")
-    if not tutorial_description:
-        raise ValueError("Tutorial description not found in data.")
+    # Generate a unique tutorial ID
     tutorial_id = str(uuid.uuid4())
-    print(f"Tutorial ID: {tutorial_id}")
+    print(f"Creating tutorial with ID: {tutorial_id}")
 
-    tutorial_answer_release_date = data.get("tutorial_answer_release_date")
-    if not tutorial_answer_release_date:
-        raise ValueError("Tutorial answer release date not found in data.")
-
-    tutorial_questions = data.get("tutorial_questions")
-
-    for question in tutorial_questions:
+    # Process questions
+    tutorial_questions = []
+    for question in data["tutorial_questions"]:
         question_id = str(uuid.uuid4())
-        question["question_id"] = question_id
-        print(f"Question ID: {question_id}")
+        question["_id"] = question_id
+        tutorial_questions.append(question)
+        print(f"Added question with ID: {question_id}")
 
+    # Sort questions by their question number
+    tutorial_questions.sort(key=lambda x: x["custom_id"])
+
+    # Check if the course exists
+    course_id = data["course"]
+    from course import course
+
+    if not course.course_exists(course_id):
+        print(f"Course with ID '{course_id}' does not exist.")
+        raise ValueError(f"Course with ID '{course_id}' does not exist.")
+
+    # Check if dates are valid
+
+    if data["tutorial_release_date"] > data["tutorial_due_date"]:
+        print("Release date cannot be after due date.")
+        raise ValueError("Release date cannot be after due date.")
+    if data["tutorial_due_date"] > data["tutorial_answer_release_date"]:
+        print("Due date cannot be after answer release date.")
+        raise ValueError("Due date cannot be after answer release date.")
+    if data["tutorial_answer_release_date"] < data["tutorial_release_date"]:
+        print("Answer release date cannot be before release date.")
+        raise ValueError("Answer release date cannot be before release date.")
+
+    # Construct the tutorial object
     tutorial = {
         "_id": tutorial_id,
-        "course": course,
-        "tutorial_name": tutorial_name,
-        "tutorial_release_date": tutorial_release_date,
-        "tutorial_due_date": tutorial_due_date,
-        "tutorial_description": tutorial_description,
-        "tutorial_answer_release_date": tutorial_answer_release_date,
+        "course": data["course"],
+        "tutorial_name": data["tutorial_name"],
+        "tutorial_release_date": data["tutorial_release_date"],
+        "tutorial_due_date": data["tutorial_due_date"],
+        "tutorial_description": data["tutorial_description"],
+        "tutorial_answer_release_date": data["tutorial_answer_release_date"],
         "tutorial_questions": tutorial_questions,
     }
 
     # Save the tutorial to the database
+    try:
+        db.tutorials.insert_one(tutorial)
+        print("Tutorial created successfully.")
+    except Exception as e:
+        print(f"Failed to create tutorial: {e}")
+        raise RuntimeError("Database operation failed.") from e
 
-    db.tutorials.insert_one(tutorial)
-    print("Tutorial created successfully.")
     return tutorial_id
