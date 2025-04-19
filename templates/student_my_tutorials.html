@@ -1,31 +1,37 @@
 {% extends "base.html" %}
+
 {% block content %}
-    <div class="card-wrapper">
-        <div class="card">
-            <h1 class="center">Tutorials</h1>
-            <table class="table">
-                <thead>
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="bg-white shadow-xl rounded-2xl p-6">
+        <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Tutorials</h1>
+
+        <div class="overflow-x-auto rounded-lg">
+            <table class="min-w-full text-sm text-left text-gray-700">
+                <thead class="bg-gray-100 text-xs text-gray-600 uppercase tracking-wide">
                     <tr>
-                        <th>Course</th>
-                        <th>Title</th>
-                        <th>Release Date</th>
-                        <th>Due Date</th>
-                        <th>Answer Release Date</th>
-                        <th>Questions</th>
-                        <th>Actions</th>
+                        <th class="px-6 py-4">Course</th>
+                        <th class="px-6 py-4">Title</th>
+                        <th class="px-6 py-4">Release Date</th>
+                        <th class="px-6 py-4">Due Date</th>
+                        <th class="px-6 py-4">Answer Release Date</th>
+                        <th class="px-6 py-4">Questions</th>
+                        <th class="px-6 py-4">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-200">
                     {% for tutorial in tutorials %}
-                        <tr>
-                            <td>{{ tutorial.course }}</td>
-                            <td>{{ tutorial.tutorial_name }}</td>
-                            <td>{{ tutorial.tutorial_release_date }}</td>
-                            <td>{{ tutorial.tutorial_due_date }}</td>
-                            <td>{{ tutorial.tutorial_answer_release_date }}</td>
-                            <td>{{ tutorial.tutorial_questions|length }}</td>
-                            <td>
-                                <a href="{{ url_for('update_tutorial_record', uuid=tutorial._id) }}">View</a>
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-4">{{ tutorial.course }}</td>
+                            <td class="px-6 py-4">{{ tutorial.tutorial_name }}</td>
+                            <td class="px-6 py-4">{{ tutorial.tutorial_release_date }}</td>
+                            <td class="px-6 py-4">{{ tutorial.tutorial_due_date }}</td>
+                            <td class="px-6 py-4">{{ tutorial.tutorial_answer_release_date }}</td>
+                            <td class="px-6 py-4 text-center">{{ tutorial.tutorial_questions|length }}</td>
+                            <td class="px-6 py-4">
+                                <a href="{{ url_for('update_tutorial_record', uuid=tutorial._id) }}"
+                                   class="text-indigo-600 hover:text-indigo-900 font-medium">
+                                   View
+                                </a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -33,4 +39,5 @@
             </table>
         </div>
     </div>
+</div>
 {% endblock content %}

@@ -1,99 +1,124 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="card-wrapper">
-        <div class="card">
-            <h1 class="center">ADD Tutorial</h1>
-            <form class="add_tut" name="add_tut" method="post">
-                <label for="course" class="label">Course</label>
-                <select id="course" name="course" class="field" required>
+    <div class="max-w-3xl mx-auto px-4 py-10">
+        <div class="bg-white shadow-xl rounded-2xl p-8 space-y-6">
+            <h1 class="text-3xl font-bold text-center text-indigo-700">Add Tutorial</h1>
+            <form name="add_tut" method="post" class="space-y-6">
+                <label for="course" class="block font-medium text-gray-700">Course</label>
+                <select id="course"
+                        name="course"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        required>
                     <option value="" disabled selected>Select a course</option>
                     {% for course in courses %}<option value="{{ course }}">{{ course }}</option>{% endfor %}
                 </select>
-                <label for="name" class="label">Tutorial Name</label>
-                <input id="name"
-                       type="text"
-                       name="tutorial_name"
-                       class="field"
-                       placeholder="Tutorial Name"
-                       required />
-                <label for="description" class="label">Description</label>
-                <textarea id="description"
-                          name="tutorial_description"
-                          class="field"
-                          placeholder="Description"
-                          required></textarea>
-                <label for="release_date" class="label">Release Date</label>
-                <input id="release_date"
-                       type="date"
-                       name="tutorial_release_date"
-                       class="field"
-                       required />
-                <label for="due_date" class="label">Due Date</label>
-                <input id="due_date"
-                       type="date"
-                       name="tutorial_due_date"
-                       class="field"
-                       required />
-                <label for="answer_release_date" class="label">Answer Release Date</label>
-                <input id="answer_release_date"
-                       type="date"
-                       name="tutorial_answer_release_date"
-                       class="field"
-                       required />
-                <div id="questions-section">
-                    <label class="label">Questions</label>
-                </div>
-                <button type="button" id="add-question" class="btn">Add Question</button>
                 <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        const questionsSection = document.getElementById('questions-section');
-                        const addQuestionButton = document.getElementById('add-question');
-
-                        let questionCount = 0;
-
-                        function createQuestionBlock(customId = "") {
-                            const index = questionCount++;
-                            const wrapper = document.createElement('div');
-                            wrapper.classList.add('question');
-                            wrapper.id = `question-${index}`;
-
-                            wrapper.innerHTML = `
-                                <label class="label">Question ID (e.g., 1a, 2):</label>
-                                <input type="text" name="questions[${index}][custom_id]" class="field" placeholder="Enter question ID" value="${customId}" required />
-
-                                <label class="label">Title:</label>
-                                <input type="text" name="questions[${index}][question_title]" class="field" placeholder="Enter question title" required />
-
-                                <label class="label">Hint:</label>
-                                <input type="text" name="questions[${index}][question_hint]" class="field" placeholder="Enter hint" />
-
-                                <label class="label">Answer:</label>
-                                <input type="text" name="questions[${index}][question_answer]" class="field" placeholder="Enter answer" required />
-
-                                <button type="button" class="remove-question btn">Remove</button>
-                                <hr />
-                            `;
-
-                            // Add remove event
-                            wrapper.querySelector('.remove-question').addEventListener('click', function () {
-                                questionsSection.removeChild(wrapper);
-                            });
-
-                            questionsSection.appendChild(wrapper);
-                        }
-
-                        addQuestionButton.addEventListener('click', () => {
-                            createQuestionBlock();
-                        });
-
-                        // Start with one question by default
-                        createQuestionBlock("1");
+                $(document).ready(function() {
+                    $('#course').selectize({
+                        placeholder: 'Select a course',
                     });
+                });
                 </script>
-                <p class="error error--hidden"></p>
-                <input type="submit" value="ADD TUTORIAL" class="btn" id="submit" />
+                <div>
+                    <label for="name" class="block font-medium text-gray-700">Tutorial Name</label>
+                    <input id="name"
+                           type="text"
+                           name="tutorial_name"
+                           placeholder="Tutorial Name"
+                           required
+                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+                </div>
+                <div>
+                    <label for="description" class="block font-medium text-gray-700">Description</label>
+                    <textarea id="description"
+                              name="tutorial_description"
+                              placeholder="Description"
+                              required
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"></textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="release_date" class="block font-medium text-gray-700">Release Date</label>
+                        <input type="date"
+                               id="release_date"
+                               name="tutorial_release_date"
+                               required
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+                    </div>
+                    <div>
+                        <label for="due_date" class="block font-medium text-gray-700">Due Date</label>
+                        <input type="date"
+                               id="due_date"
+                               name="tutorial_due_date"
+                               required
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+                    </div>
+                    <div>
+                        <label for="answer_release_date" class="block font-medium text-gray-700">Answer Release Date</label>
+                        <input type="date"
+                               id="answer_release_date"
+                               name="tutorial_answer_release_date"
+                               required
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+                    </div>
+                </div>
+                <div id="questions-section" class="space-y-6">
+                    <label class="block text-lg font-semibold text-gray-800">Questions</label>
+                    <!-- Questions will be dynamically added here -->
+                </div>
+                <button type="button"
+                        id="add-question"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+                    ➕ Add Question
+                </button>
+                <p class="error error--hidden text-red-600 text-sm"></p>
+                <input type="submit"
+                       value="Add Tutorial"
+                       class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-md transition duration-200" />
             </form>
         </div>
     </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const questionsSection = document.getElementById('questions-section');
+        const addQuestionButton = document.getElementById('add-question');
+        let questionCount = 0;
+
+        function createQuestionBlock(customId = "") {
+            const index = questionCount++;
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('bg-gray-50', 'p-4', 'rounded', 'shadow-sm', 'relative');
+
+            wrapper.innerHTML = `
+                <label class="block font-medium text-gray-700">Question ID</label>
+                <input type="text" name="questions[${index}][custom_id]" class="field w-full mb-2 p-2 border rounded" placeholder="e.g., 1a or 2" value="${customId}" required />
+
+                <label class="block font-medium text-gray-700">Title</label>
+                <input type="text" name="questions[${index}][question_title]" class="field w-full mb-2 p-2 border rounded" placeholder="Enter question title" required />
+
+                <label class="block font-medium text-gray-700">Hint</label>
+                <input type="text" name="questions[${index}][question_hint]" class="field w-full mb-2 p-2 border rounded" placeholder="Optional hint" />
+
+                <label class="block font-medium text-gray-700">Answer</label>
+                <input type="text" name="questions[${index}][question_answer]" class="field w-full mb-4 p-2 border rounded" placeholder="Enter answer" required />
+
+                <button type="button" class="absolute top-2 right-2 text-sm text-red-600 hover:text-red-800 remove-question">✖</button>
+            `;
+
+            wrapper.querySelector('.remove-question').addEventListener('click', function () {
+                questionsSection.removeChild(wrapper);
+            });
+
+            questionsSection.appendChild(wrapper);
+        }
+
+        addQuestionButton.addEventListener('click', () => {
+            createQuestionBlock();
+        });
+
+        // Add one question by default
+        createQuestionBlock("1");
+    });
+    </script>
     <script src="/static/add_tutorial/script.js"></script>
 {% endblock content %}

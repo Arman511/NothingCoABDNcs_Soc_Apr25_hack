@@ -1,33 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="card-wrapper">
-        <div class="card add-course-card">
-            <h1 class="center">Add Course</h1>
-            <form class="add_course_form" name="add_course_form" method="post">
-                <label for="course_id" class="label">Course ID</label>
-                <input id="course_id"
-                       type="text"
-                       name="course_id"
-                       class="field"
-                       placeholder="Course ID"
-                       required />
-                <label for="course_name" class="label">Course Name</label>
-                <input id="course_name"
-                       type="text"
-                       name="course_name"
-                       class="field"
-                       placeholder="Course Name"
-                       required />
-                <label for="description" class="label">Description</label>
-                <textarea id="description"
-                          name="description"
-                          class="field"
-                          placeholder="Course Description"
-                          required></textarea>
-                <p class="error error--hidden"></p>
-                <input type="submit" value="Add Course" class="btn" id="submit" />
-            </form>
-        </div>
-        <script src="/static/add_course/script.js"></script>
+<div class="max-w-3xl mx-auto px-4 py-10">
+    <div class="bg-white shadow-xl rounded-2xl p-8 space-y-6">
+        <h1 class="text-3xl font-bold text-center text-indigo-700">Add Course</h1>
+
+        <form name="add_course_form" method="post" class="space-y-6">
+            <div>
+                <label for="course_id" class="block font-medium text-gray-700">Course ID</label>
+                <input id="course_id" type="text" name="course_id" placeholder="Course ID" required
+                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
+            </div>
+
+            <div>
+                <label for="course_name" class="block font-medium text-gray-700">Course Name</label>
+                <input id="course_name" type="text" name="course_name" placeholder="Course Name" required
+                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
+            </div>
+
+            <div>
+                <label for="description" class="block font-medium text-gray-700">Description</label>
+                <textarea id="description" name="description" placeholder="Course Description" required
+                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"></textarea>
+            </div>
+
+            <p class="error error--hidden text-red-600 text-sm"></p>
+
+            <input type="submit" value="Add Course"
+                   class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-md transition duration-200"/>
+        </form>
     </div>
+</div>
+
+<script src="/static/add_course/script.js"></script>
 {% endblock content %}
