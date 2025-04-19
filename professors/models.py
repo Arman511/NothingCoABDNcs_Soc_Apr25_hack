@@ -1,7 +1,5 @@
 import uuid
-from flask import Flask, jsonify, redirect, render_template, request, session
-from pymongo import MongoClient
-import os
+from flask import jsonify
 from passlib.hash import pbkdf2_sha512
 
 
@@ -20,7 +18,11 @@ class Professor:
         # Hash the password and save the professor
         hashed_password = pbkdf2_sha512.hash(professor["password"])
         db.professors_collection.insert_one(
-            {"_id": uuid.uuid1().hex, "email": professor["email"], "password": hashed_password}
+            {
+                "_id": uuid.uuid1().hex,
+                "email": professor["email"],
+                "password": hashed_password,
+            }
         )
 
         return jsonify({"message": "Professor added successfully"}), 201

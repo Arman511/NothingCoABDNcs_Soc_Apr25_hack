@@ -1,7 +1,4 @@
-import uuid
-from dotenv import load_dotenv
 from flask import jsonify, redirect, render_template, request, session
-from itsdangerous import URLSafeSerializer
 from passlib.hash import pbkdf2_sha512
 from .models import Student
 
@@ -14,7 +11,6 @@ def add_student_routes(app):
         """
         Route for adding a student.
         """
-        from app import db
 
         data = request.get_json()
         if not data:
@@ -28,14 +24,14 @@ def add_student_routes(app):
 
         # Check if the student already exists
         return Student().add_student(data)
-    
+
     @app.route("/student/login", methods=["GET", "POST"])
     def student_login():
         """
         Route for student login.
         """
         from app import db
-        
+
         if request.method == "POST":
             data = request.get_json()
             if not data:
@@ -59,6 +55,3 @@ def add_student_routes(app):
                 return redirect("/student/dashboard")
 
         return render_template("login_stu.html")
-        
-
-

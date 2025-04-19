@@ -1,10 +1,9 @@
-import uuid
-from dotenv import load_dotenv
 from flask import jsonify, redirect, render_template, request, session
-from itsdangerous import URLSafeSerializer
 from passlib.hash import pbkdf2_sha512
+
+import route_wrapper
 from .models import Professor
-from app import prof_login_required
+
 
 def add_professor_routes(app):
     """Add professor routes."""
@@ -14,7 +13,6 @@ def add_professor_routes(app):
         """
         Route for adding a professor.
         """
-        from app import db
 
         data = request.get_json()
         if not data:
@@ -25,9 +23,9 @@ def add_professor_routes(app):
 
         if not email or not password:
             return jsonify({"error": "Email and password are required"}), 400
-        
+
         return Professor().register_professor(data)
-    
+
     @app.route("/professor/logout", methods=["GET"])
     def logout():
         """
@@ -35,22 +33,22 @@ def add_professor_routes(app):
         """
         session.pop("professor", None)
         return redirect("/")
-    
+
     @app.route("/professor/dashboard", methods=["GET"])
-    @prof_login_required
+    @route_wrapper.prof_login_required
     def professor_dashboard():
         """
         Route for professor dashboard.
         """
         return render_template("professor_dashboard.html")
-    
+
     @app.route("/professor/login", methods=["GET", "POST"])
     def professor_login():
         """
         Route for professor login.
         """
         from app import db
-        
+
         if request.method == "POST":
             data = request.get_json()
             if not data:
@@ -74,8 +72,3 @@ def add_professor_routes(app):
                 return redirect("/professor/dashboard")
 
         return render_template("login_prof.html")
-
-
-
-
-        
