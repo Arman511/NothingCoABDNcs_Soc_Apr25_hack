@@ -75,6 +75,13 @@ def add_student_routes(app):
 
             return Student().update_student_course_info(data)
 
+        student_uuid = session.get("student")
+
+        student = Student().get_student_by_uuid(student_uuid)
+
+        if "courses" not in student:
+            student["courses"] = []
+
         return render_template(
-            "add_update_courses.html", courses=course.get_all_courses()
+            "add_update_courses.html", courses=course.get_all_courses(), student=student
         )
