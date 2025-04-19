@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import jsonify, render_template, request, session
 
 from course import course
@@ -92,36 +93,47 @@ def add_tutorial_routes(app):
         student_rec = Student().get_student_by_uuid(student_uuid)
         if not student_rec:
             return jsonify({"error": "No student found"}), 404
-        tutorial_rec = db.tutorial_student.find_one(
+
+        tut = tutorial.get_tutorial_by_uuid(uuid)
+        tutorial_student_rec = db.tutorial_student.find_one(
             {"tutorial_id": uuid, "student_id": student_uuid}
         )
 
-        if not tutorial_rec:
-            new_tut = tutorial.get_tutorial_by_uuid(uuid)
+        if not tutorial_student_rec:
 
-            if not new_tut:
+            if not tut:
                 return jsonify({"error": "No tutorial found"}), 404
 
-            course_rec = db.courses.find_one({"course_id": new_tut["course"]})
+            course_rec = db.courses.find_one({"course_id": tut["course"]})
 
             if course_rec["_id"] not in student_rec["courses"]:
                 return jsonify({"error": "You are not enrolled in this course"}), 403
 
-            tutorial_rec = {
-                "tutorial_id": new_tut["_id"],
+            tutorial_student_rec = {
+                "tutorial_id": tut["_id"],
                 "student_id": student_uuid,
-                "tutorial_name": new_tut["tutorial_name"],
-                "tutorial_due_date": new_tut["tutorial_due_date"],
-                "tutorial_release_date": new_tut["tutorial_release_date"],
-                "tutorial_answer_release_date": new_tut["tutorial_answer_release_date"],
-                "course": new_tut["course"],
+                "tutorial_name": tut["tutorial_name"],
+                "tutorial_due_date": tut["tutorial_due_date"],
+                "tutorial_release_date": tut["tutorial_release_date"],
+                "tutorial_answer_release_date_passed": datetime.strptime(
+                    tut["tutorial_answer_release_date"], "%Y-%m-%d"
+                )
+                <= datetime.now(),
+                "course": tut["course"],
+                "tutorial_questions": tut["tutorial_questions"],
+                "tutorial_description": tut["tutorial_description"],
             }
             return render_template(
                 "update_record_tutorial.html",
-                tutorial=tutorial_rec,
+                tutorial=tutorial_student_rec,
             )
+
+        tutorial_student_rec["tutorial_answer_release_date_passed"] = (
+            datetime.strptime(tut["tutorial_answer_release_date"], "%Y-%m-%d")
+            <= datetime.now()
+        )
 
         return render_template(
             "update_record_tutorial.html",
-            tutorial=tutorial_rec,
+            tutorial=tutorial_student_rec,
         )
