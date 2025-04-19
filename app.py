@@ -73,7 +73,7 @@ def professor_login():
 
         prof = professors_collection.find_one(
             {
-                "username": username,
+                "email": username,
             }
         )
 
