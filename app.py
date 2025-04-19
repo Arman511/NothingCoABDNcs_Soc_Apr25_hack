@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, session
+from flask import Flask, jsonify, redirect, render_template, request, session
 from pymongo import MongoClient
 import os
 from passlib.hash import pbkdf2_sha512
@@ -96,6 +96,20 @@ add_professor_routes(app)
 # Add other routes
 add_tutorial_routes(app)
 add_course_routes(app)
+
+
+@app.route("/home", methods=["GET"])
+def home():
+    """
+    Route for home page.
+    """
+    if "student" in session:
+        return redirect("/student/dashboard")
+    if "professor" in session:
+        return redirect("/professor/dashboard")
+
+    return render_template("index.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
