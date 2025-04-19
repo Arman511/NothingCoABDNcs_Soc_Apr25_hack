@@ -1,5 +1,7 @@
 import uuid
 
+from flask import session
+
 
 def make_tutorial(data):
     """
@@ -79,3 +81,60 @@ def make_tutorial(data):
         raise RuntimeError("Database operation failed.") from e
 
     return tutorial_id
+
+
+def get_tutorial_by_uuid(tutorial_uuid):
+    """
+    Function to get a tutorial by its UUID.
+    """
+
+    from app import db
+
+    tutorial = db.tutorials.find_one({"_id": tutorial_uuid})
+    if not tutorial:
+        print(f"Tutorial with ID '{tutorial_uuid}' not found.")
+        raise ValueError(f"Tutorial with ID '{tutorial_uuid}' not found.")
+    return tutorial
+
+
+def get_all_tutorials():
+    """
+    Function to get all tutorials.
+    """
+    from app import db
+
+    tutorials = db.tutorials.find()
+    if not tutorials:
+        print("No tutorials found.")
+        return []
+    return list(tutorials)
+
+
+def update_student_tutorial(data, tutorial_uuid):
+    """
+    Function to update a student's tutorial record.
+    """
+
+    from app import db
+
+    # Validate required fields
+    if not data or not tutorial_uuid:
+        print("No data provided.")
+        raise ValueError("No data provided.")
+
+    # Update the tutorial record in the database
+    try:
+        db.tutorial_student.update_one(
+            {"tutorial_id": tutorial_uuid, "student_id": session.get("student")},
+            {"$set": data},
+            upsert=True,
+        )
+        print(f"Tutorial record for UUID '{tutorial_uuid}' updated successfully.")
+
+        return {"message": "Tutorial record updated successfully."}, 200
+    except Exception as e:
+        print(f"Failed to update tutorial record: {e}")
+        return (
+            {"error": "Failed to update tutorial record."},
+            500,
+        )

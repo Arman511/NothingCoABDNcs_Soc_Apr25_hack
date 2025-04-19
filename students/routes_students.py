@@ -87,3 +87,27 @@ def add_student_routes(app):
             courses=course.get_all_courses(),
             student=student,
         )
+
+    @app.route("/student/my_tutorials", methods=["GET"])
+    @route_wrapper.student_login_required
+    def student_my_tutorials():
+        """
+        Route for getting a student's tutorials.
+        """
+        student_uuid = session.get("student")
+
+        tutorials = Student().get_student_tutorials(student_uuid)
+
+        tutorials = sorted(
+            tutorials,
+            key=lambda x: (
+                x["course"],
+                x["tutorial_name"],
+            ),
+            reverse=True,
+        )
+
+        return render_template(
+            "student_my_tutorials.html",
+            tutorials=tutorials,
+        )

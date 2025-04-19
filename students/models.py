@@ -1,3 +1,4 @@
+from datetime import datetime
 import uuid
 from flask import jsonify, session
 from passlib.hash import pbkdf2_sha512
@@ -79,7 +80,7 @@ class Student:
         )
 
         return jsonify({"message": "Student updated successfully"}), 200
-    
+
     def get_student_courses(self, student):
         """Get a student's courses from the database"""
 
@@ -90,10 +91,6 @@ class Student:
             return jsonify({"error": "Student not found"}), 404
 
         return jsonify({"courses": student["course"]}), 200
-    
-    
-    
-    
 
     def get_student_by_uuid(self, student_uuid):
         """Get a student by UUID from the database"""
@@ -105,3 +102,31 @@ class Student:
             return jsonify({"error": "Student not found"}), 404
 
         return student
+
+    def get_student_tutorials(self, student_uuid):
+        """Get a student's tutorials from the database"""
+
+        from app import db
+
+        student = db.students.find_one({"_id": student_uuid})
+        if student is None:
+            return jsonify({"error": "Student not found"}), 404
+
+        courses = student["courses"]
+        course_codes = []
+        for course in courses:
+            tmp = db.courses.find_one({"_id": course})
+            if tmp:
+                course_codes.append(tmp["course_id"])
+
+        tutorials = db.tutorials.find({"course": {"$in": course_codes}})
+        stu_tut = []
+
+        for tut in tutorials:
+            if (
+                datetime.strptime(tut["tutorial_release_date"], "%Y-%m-%d")
+                <= datetime.now()
+            ):
+                stu_tut.append(tut)
+
+        return stu_tut
