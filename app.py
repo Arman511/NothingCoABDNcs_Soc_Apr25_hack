@@ -1,7 +1,6 @@
 from functools import wraps
 from flask import Flask, jsonify, redirect, render_template, request, session
 from pymongo import MongoClient
-import uuid
 import os
 from passlib.hash import pbkdf2_sha512
 
