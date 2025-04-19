@@ -72,6 +72,16 @@ def add_student_routes(app):
             return jsonify({"error": "Courses are required"}), 400
         
         return Student().update_student_course_info(data)
+    
+    @app.route("/student/dashboard", methods=["GET"])
+    def student_dashboard():
+        """
+        Route for student dashboard.
+        """
+        if "student" not in session:
+            return redirect("/student/login")
+
+        return render_template("dash_stu.html")
         
         
         
