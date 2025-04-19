@@ -1,6 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, jsonify, render_template, request, session
 from pymongo import MongoClient
 import os
+from passlib.hash import pbkdf2_sha512
 
 from dotenv import load_dotenv
 
@@ -19,9 +20,6 @@ app.debug = True
 client: MongoClient = MongoClient(os.getenv("MONGODB_URI"))
 db = client["mydatabase"]
 
-students_collection = db["students"]
-professors_collection = db["professors"]
-
 
 @app.route("/")
 def index():
@@ -34,6 +32,49 @@ def admin():
     Route for admin login.
     """
     return render_template("admin.html")
+
+@app.route("/login", methods=["GET","POST"])
+def login():
+    """
+    Route for login.
+    """
+    if request.method == "POST":
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        username = data.get("username")
+        password = data.get("password")
+        if not username or not password:
+            return jsonify({"error": "Username and password are required"}), 400
+        if data.get("isProf"):
+            # Professor login
+            prof = db.professors.find_one(
+                {
+                    "email": username,
+                }
+            )
+            if not prof:
+                return jsonify({"error": "Invalid username or password"}), 401
+            if not pbkdf2_sha512.verify(password, prof["password"]):
+                return jsonify({"error": "Invalid username or password"}), 401
+            session["professor"] = prof["_id"]
+            return jsonify({"message": "Login successful"}), 200
+        else:
+            # Student login
+            student = db.students.find_one(
+                {
+                    "email": username,
+                }
+            )
+            if not student:
+                return jsonify({"error": "Invalid username or password"}), 401
+            if not pbkdf2_sha512.verify(password, student["password"]):
+                return jsonify({"error": "Invalid username or password"}), 401
+            session["student"] = student["_id"]
+            return jsonify({"message": "Login successful"}), 200
+
+
+    return render_template("login.html")
 
 
 add_student_routes(app)

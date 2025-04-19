@@ -42,7 +42,7 @@ def add_professor_routes(app):
         """
         return render_template("professor_dashboard.html")
 
-    @app.route("/professor/login", methods=["GET", "POST"])
+    @app.route("/professor/login", methods=["POST"])
     def professor_login():
         """
         Route for professor login.

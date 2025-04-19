@@ -7,7 +7,7 @@
                 <div class="center mb-4">
                     student
                     <input type="checkbox"
-                           checked="checked"
+                           id="isProf"
                            class="toggle border-indigo-600 bg-indigo-500 checked:border-orange-500 checked:bg-orange-400 checked:text-orange-800 mx-2" />
                     professor
                 </div>
@@ -25,26 +25,15 @@
                     <input id="password"
                            type="password"
                            name="password"
-                           class="field input validator"
+                           class="field input"
                            placeholder="Password"
-                           minlength="8"
-                           maxlength="20"
                            autocomplete="password"
                            required />
-                    <p class="validator-hint">
-                        Must be more than 8 characters, including
-                        <br />
-                        At least one number
-                        <br />
-                        At least one lowercase letter
-                        <br />
-                        At least one uppercase letter
-                    </p>
                 </div>
                 <p class="error error--hidden"></p>
                 <input type="submit" value="Log In" class="btn btn-primary" id="submit" />
             </form>
         </div>
-        <script class="primary-student" src="/static/stu_login/script.js"></script>
+        <script class="primary-student" src="/static/login/script.js"></script>
     </div>
 {% endblock content %}
